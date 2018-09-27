@@ -26,7 +26,7 @@ public class TestProducer {
 //	final String FQDN = CONNECTION_STRING.substring(CONNECTION_STRING.indexOf("sb://") + 5, CONNECTION_STRING.indexOf("/;")) + ":9093";
 	//System.out.println("CONNECTION STRING = " + CONNECTION_STRING + "\nFQDN = " + FQDN);
 	//System.exit(1);
-        final Producer<Long, String> producer = createProducer(CONNECTION_STRING);
+        final Producer<Long, String> producer = createProducer();
         final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
                                                                                                                    
         //Run several CDRs                                                                                         
@@ -41,7 +41,7 @@ public class TestProducer {
         try {                                                                                                      
             Properties properties = new Properties();                                                              
             properties.load(new FileReader(CONFIG_PATH));
-	    properties.put("sasl.jaas.config", properties.get("sasl.jaas.config").replace("{YOUR.EVENTHUBS.CONNECTION.STRING}", CONNECTION_STRING));
+	    properties.put("sasl.jaas.config", properties.getProperty("sasl.jaas.config").replace("{YOUR.EVENTHUBS.CONNECTION.STRING}", CONNECTION_STRING));
 	    properties.put("bootstrap.servers", FQDN);
 	    properties.put(ProducerConfig.CLIENT_ID_CONFIG, "java-producer");                                
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());            
