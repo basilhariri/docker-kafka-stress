@@ -17,9 +17,14 @@ import java.util.concurrent.Executors;
 public class TestProducer {                                                                                                                                                                                       
     private final static int NUM_THREADS = 20;                                                                     
     private final static String CONFIG_PATH = "src/main/resources/producer.config";                                
+
                                                                                                                                                                                                              
     public static void main(String... args) throws Exception {                                                     
         //Create Kafka Producer                                                                                    
+	final String CONNECTION_STRING = System.getenv("CONNECTION_STRING");
+	final String FQDN = CONNECTION_STRING.substring(CONNECTION_STRING.indexOf("sb://") + 5, CONNECTION_STRING.indexOf("/;"));
+	System.out.println("CONNECTION STRING = " + CONNECTION_STRING + "\nFQDN = " + FQDN);
+	System.exit(1);
         final Producer<Long, String> producer = createProducer();                                                  
         final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);                         
                                                                                                                    
