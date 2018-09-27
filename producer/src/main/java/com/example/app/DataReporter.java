@@ -52,7 +52,7 @@ public class DataReporter implements Runnable
                 System.out.println(new Date(time) + " " + s.substring(0, 30));
                 Properties props = new Properties();
                 props.load(new FileReader(CONFIG_PATH));
-                final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(props.getProperty("topic"), time, s);
+                final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(System.getenv("TOPIC"), time, s);
                 producer.send(record).get();
                 sentCount++;
 
