@@ -1,39 +1,71 @@
-//Copyright (c) Microsoft Corporation. All rights reserved.
-//Licensed under the MIT License.
-import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+
+import java.io.FileReader;
 import java.sql.Timestamp;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.Date;
 
-public class TestDataReporter implements Runnable {
-
-    private static final int NUM_MESSAGES = 100;
-    private final String TOPIC;
-
+public class DataReporter implements Runnable 
+{
+    //Constants
+    private String CONFIG_PATH;
+    //Instance
     private Producer<Long, String> producer;
 
-    public TestDataReporter(final Producer<Long, String> producer, String TOPIC) {
+    public DataReporter(final Producer<Long, String> producer, String CONFIG_PATH)
+    {
         this.producer = producer;
-        this.TOPIC = TOPIC;
+        this.CONFIG_PATH = CONFIG_PATH;
+    }
+
+    public String createRandomString(int sentCount, int length)
+    {
+        try
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append(sentCount + " ");
+            while(sb.length() < length)
+            {
+                sb.append(" ");
+            }
+            return sb.toString();
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+            return null;
+        }
     }
 
     @Override
-    public void run() {
-        for(int i = 0; i < NUM_MESSAGES; i++) {                
-            long time = System.currentTimeMillis();
-            System.out.println("Test Data #" + i + " from thread #" + Thread.currentThread().getId());
-            
-            final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(TOPIC, time, "Test Data #" + i);
-            producer.send(record, new Callback() {
-                public void onCompletion(RecordMetadata metadata, Exception exception) {
-                    if (exception != null) {
-                        System.out.println(exception);
-                        System.exit(1);
-                    }
-                }
-            });
+    public void run() 
+    {
+        int sentCount = 0;
+        while (true) 
+        {
+            try 
+            {
+                long time = System.currentTimeMillis();
+                String s = createRandomString(sentCount, 1000);
+                System.out.println(new Date(time) + " " + s.substring(0, 30));
+                Properties props = new Properties();
+                props.load(new FileReader(CONFIG_PATH));
+                final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(props.getProperty("topic"), time, s);
+                producer.send(record).get();
+                sentCount++;
+
+            } 
+            catch (InterruptedException e) 
+            {
+                Thread.interrupted();
+                break;
+            } 
+            catch (Exception e)
+            {
+                System.out.println(e);
+            }
         }
-        System.out.println("Finished sending " + NUM_MESSAGES + " messages from thread #" + Thread.currentThread().getId() + "!");
     }
 }
