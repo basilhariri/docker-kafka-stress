@@ -27,7 +27,7 @@ public class TestProducer
                                                                                                                    
         //Run several CDRs                                                                                         
         for (int i = 0; i < NUM_THREADS; i++)
-            executorService.execute(new DataReporter(producer, CONFIG_PATH));                                      
+            executorService.execute(new DataReporter(producer));                                      
     }                                                                                                              
                                                                                                                    
     private static final Logger logger =                                                                           

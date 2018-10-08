@@ -9,8 +9,6 @@ import java.util.Date;
 
 public class DataReporter implements Runnable 
 {
-    //Constants
-    private String CONFIG_PATH;
     //Instance
     private Producer<Long, String> producer;
 
