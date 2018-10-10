@@ -3,7 +3,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.io.FileReader;
 import java.sql.Timestamp;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.Date;
 
@@ -50,8 +49,12 @@ public class DataReporter implements Runnable
                 long time = System.currentTimeMillis();
                 String s = createRandomString(sentCount, 1000);
                 System.out.println(new Date(time) + " " + s.substring(0, 30));
-                Properties props = new Properties();
-                props.load(new FileReader(CONFIG_PATH));
+                
+                //Print progress occasionally
+                if(sentCount % 10000 == 0)
+                {
+                    System.out.println(new Date(time) + " " + s.substring(0, 30));
+                }
                 final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(System.getenv("TOPIC"), time, s);
                 producer.send(record).get();
                 sentCount++;
