@@ -23,7 +23,7 @@ public class DataReporter implements Runnable
             StringBuilder sb = new StringBuilder();
             sb.append(sentCount + " ");
             while(sb.length() < length)
-            {
+            { 
                 sb.append(" ");
             }
             return sb.toString();

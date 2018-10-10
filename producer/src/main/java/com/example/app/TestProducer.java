@@ -30,7 +30,7 @@ public class TestProducer
                                                                                                                    
         //Run several CDRs                                                                                         
         for (int i = 0; i < NUM_THREADS; i++)
-            executorService.execute(new DataReporter(producer, CONFIG_PATH));                                      
+            executorService.execute(new DataReporter(producer));                                      
     }                                                                                                              
                                                                                                                    
     private static final Logger logger =                                                                           
@@ -39,12 +39,12 @@ public class TestProducer
     private static Producer<Long, String> createProducer() 
     {                                                       
         try 
-	{                                                                                                      
+	    {                                                                                                      
             Properties properties = new Properties();                                                              
             properties.load(new FileReader(CONFIG_PATH));
-	    properties.put("sasl.jaas.config", properties.getProperty("sasl.jaas.config").replace("{YOUR.EVENTHUBS.CONNECTION.STRING}", CONNECTION_STRING));
-	    properties.put("bootstrap.servers", FQDN);
-	    properties.put(ProducerConfig.CLIENT_ID_CONFIG, "java-producer-" + PRODUCER_ID);
+	        properties.put("sasl.jaas.config", properties.getProperty("sasl.jaas.config").replace("{YOUR.EVENTHUBS.CONNECTION.STRING}", CONNECTION_STRING));
+	        properties.put("bootstrap.servers", FQDN);
+	        properties.put(ProducerConfig.CLIENT_ID_CONFIG, "java-producer-" + PRODUCER_ID);
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());            
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());        
             for (Object s : properties.keySet())                                                                   
@@ -53,11 +53,11 @@ public class TestProducer
             }                                                                                                      
             return new KafkaProducer<>(properties);                                                                
         } 
-	catch (Exception e)
-	{                                                                                     
-            System.out.println("Exception: " + e);                                                                 
-            System.exit(1);                                                                                        
-            return null;                                                                                           
-        }                                                                                                          
-    }                                                                                                              
+        catch (Exception e)
+        {                                                                                     
+                System.out.println("Exception: " + e);                                                                 
+                System.exit(1);                                                                                        
+                return null;                                                                                           
+            }                                                                                                          
+        }                                                                                                              
 }

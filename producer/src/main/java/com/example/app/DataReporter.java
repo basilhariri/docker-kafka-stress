@@ -8,15 +8,12 @@ import java.util.Date;
 
 public class DataReporter implements Runnable 
 {
-    //Constants
-    private String CONFIG_PATH;
     //Instance
     private Producer<Long, String> producer;
 
-    public DataReporter(final Producer<Long, String> producer, String CONFIG_PATH)
+    public DataReporter(final Producer<Long, String> producer)
     {
         this.producer = producer;
-        this.CONFIG_PATH = CONFIG_PATH;
     }
 
     public String createRandomString(int sentCount, int length)
@@ -47,9 +44,7 @@ public class DataReporter implements Runnable
             try 
             {
                 long time = System.currentTimeMillis();
-                String s = createRandomString(sentCount, 1000);
-                System.out.println(new Date(time) + " " + s.substring(0, 30));
-                
+                String s = createRandomString(sentCount, 1000);                
                 //Print progress occasionally
                 if(sentCount % 10000 == 0)
                 {
@@ -58,7 +53,6 @@ public class DataReporter implements Runnable
                 final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(System.getenv("TOPIC"), time, s);
                 producer.send(record).get();
                 sentCount++;
-
             } 
             catch (InterruptedException e) 
             {
