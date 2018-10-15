@@ -41,6 +41,7 @@ public class DataReporter implements Runnable
         int sentCount = 0;
         double sumLatency = 0.0;
         String topic = System.getenv("TOPIC");
+        System.out.println("Topic = " + topic);
         while (true) 
         {
             try 
