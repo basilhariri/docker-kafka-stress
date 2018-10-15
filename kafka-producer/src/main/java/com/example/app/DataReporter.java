@@ -61,7 +61,7 @@ public class DataReporter implements Runnable
                 //Print latency occasionally
                 if(sentCount % 1000 == 0 && sentCount > 0)
                 {
-                    System.out.println("Thread #" + Thread.currentThread().getId() + ", avg latency = " + sumLatency / sentCount + "ms (updated every 1000 events)");
+                    System.out.printf("Thread #%d, avg latency = %0.2fms (updated every 1000 events)." + Thread.currentThread().getId(), sumLatency / sentCount);
                 }
                 sentCount++;
             } 
