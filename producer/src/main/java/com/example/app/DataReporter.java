@@ -39,19 +39,30 @@ public class DataReporter implements Runnable
     public void run() 
     {
         int sentCount = 0;
+        double sumLatency = 0.0;
+        String topic = System.getenv("TOPIC");
         while (true) 
         {
             try 
             {
+                //Create payload
+                String s = createRandomString(sentCount, 1000);
+                
+                //Create message
                 long time = System.currentTimeMillis();
-                String s = createRandomString(sentCount, 1000);                
-                //Print progress occasionally
-                if(sentCount % 10000 == 0)
-                {
-                    System.out.println(new Date(time) + " " + s.substring(0, 30));
-                }
-                final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(System.getenv("TOPIC"), time, s);
+                final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(topic, time, s);                
+                
+                //Send record and calculate latency of send
+                long startTime = System.currentTimeMillis();
                 producer.send(record).get();
+                long stopTime = System.currentTimeMillis();
+                sumLatency += stopTime - startTime;
+                
+                //Print latency occasionally
+                if(sentCount % 1000 == 0 && sentCount > 0)
+                {
+                    System.out.println("Thread #" + Thread.currentThread().getId() + ", avg latency = " + sumLatency / sentCount + "ms (updated every 1000 events)");
+                }
                 sentCount++;
             } 
             catch (InterruptedException e) 

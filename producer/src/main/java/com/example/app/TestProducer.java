@@ -20,7 +20,6 @@ public class TestProducer
     private final static String CONFIG_PATH = "src/main/resources/producer.config";
     private final static String CONNECTION_STRING = System.getenv("CONNECTION_STRING");
     private final static String FQDN = CONNECTION_STRING.substring(CONNECTION_STRING.indexOf("sb://") + 5, CONNECTION_STRING.indexOf("/;")) + ":9093";
-    private final static String PRODUCER_ID = System.getenv("PRODUCER_ID");
 
     public static void main(String... args) throws Exception 
     {
@@ -42,9 +41,8 @@ public class TestProducer
 	    {                                                                                                      
             Properties properties = new Properties();                                                              
             properties.load(new FileReader(CONFIG_PATH));
-	        properties.put("sasl.jaas.config", properties.getProperty("sasl.jaas.config").replace("{YOUR.EVENTHUBS.CONNECTION.STRING}", CONNECTION_STRING));
-	        properties.put("bootstrap.servers", FQDN);
-	        properties.put(ProducerConfig.CLIENT_ID_CONFIG, "java-producer-" + PRODUCER_ID);
+            properties.put("bootstrap.servers", FQDN);
+            properties.put("sasl.jaas.config", properties.getProperty("sasl.jaas.config").replace("{YOUR.EVENTHUBS.CONNECTION.STRING}", CONNECTION_STRING));
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());            
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());        
             for (Object s : properties.keySet())                                                                   
