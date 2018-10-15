@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
                                                                                                                    
 public class TestProducer 
 {
-    private final static int NUM_THREADS = System.getenv("NUM_THREADS");
+    private final static int NUM_THREADS = Integer.parseInt(System.getenv("NUM_THREADS"));
     private final static String BOOTSTRAP_SERVERS = System.getenv("BOOTSTRAP_SERVERS");
 
     public static void main(String... args) throws Exception 
