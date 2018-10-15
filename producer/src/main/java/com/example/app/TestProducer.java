@@ -39,21 +39,28 @@ public class TestProducer
     {                                                       
         try 
 	    {                                                                                                      
-            Properties properties = new Properties();                                                              
+            Properties properties = new Properties();      
+            System.out.println("A");                                                        
             properties.load(new FileReader(CONFIG_PATH));
+            System.out.println("B");                                                        
             properties.put("bootstrap.servers", FQDN);
+            System.out.println("C");                                                        
             properties.put("sasl.jaas.config", properties.getProperty("sasl.jaas.config").replace("{YOUR.EVENTHUBS.CONNECTION.STRING}", CONNECTION_STRING));
+            System.out.println("D");                                                        
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());            
+            System.out.println("E");                                                        
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());        
+            System.out.println("F");                                                        
             for (Object s : properties.keySet())                                                                   
             {                                                                                                      
                 System.out.println(s + ":" + properties.get(s));                                                   
             }                                                                                                      
+            System.out.println("G");                                                        
             return new KafkaProducer<>(properties);                                                                
         } 
         catch (Exception e)
         {                                                                                     
-                System.out.println("Exception: " + e);                                                                 
+                System.out.println("Exception: " + e.getMessage());                                                                 
                 System.exit(1);                                                                                        
                 return null;                                                                                           
             }                                                                                                          

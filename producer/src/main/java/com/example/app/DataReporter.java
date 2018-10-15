@@ -72,7 +72,7 @@ public class DataReporter implements Runnable
             } 
             catch (Exception e)
             {
-                System.out.println(e);
+                System.out.println("Exception in DataReporter:run " + e.getMessage());
             }
         }
     }
