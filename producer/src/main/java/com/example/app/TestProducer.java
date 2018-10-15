@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
                                                                                                                    
 public class TestProducer 
 {
-    private final static int NUM_THREADS = 5;
+    private final static int NUM_THREADS = System.getenv("NUM_THREADS");
     private final static String CONFIG_PATH = "src/main/resources/producer.config";
     private final static String CONNECTION_STRING = System.getenv("CONNECTION_STRING");
     private final static String FQDN = CONNECTION_STRING.substring(CONNECTION_STRING.indexOf("sb://") + 5, CONNECTION_STRING.indexOf("/;")) + ":9093";
@@ -49,7 +49,6 @@ public class TestProducer
             {                                                                                                      
                 System.out.println(s + ":" + properties.get(s));                                                   
             }                                                                                                      
-            System.out.println("G");                                                        
             return new KafkaProducer<>(properties);                                                                
         } 
         catch (Exception e)
