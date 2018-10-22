@@ -3,7 +3,6 @@
 import org.apache.kafka.clients.producer.KafkaProducer;                                                            
 import org.apache.kafka.clients.producer.Producer;                                                                 
 import org.apache.kafka.clients.producer.ProducerConfig;                                                           
-import org.apache.kafka.clients.producer.ProducerRecord;                                                           
 import org.apache.kafka.common.serialization.LongSerializer;                                                       
 import org.apache.kafka.common.serialization.StringSerializer;                                                     
 import org.slf4j.Logger;                                                                                           
@@ -13,7 +12,10 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;                                                                     
 import java.util.concurrent.ExecutorService;                                                                       
 import java.util.concurrent.Executors;                                                                             
-                                                                                                                   
+  
+/**
+ * Test program that starts thread(s) that produce messages to a given Kafka cluster
+ */
 public class TestProducer 
 {
     private final static int NUM_THREADS = Integer.parseInt(System.getenv("NUM_THREADS"));
@@ -25,32 +27,35 @@ public class TestProducer
         final Producer<Long, String> producer = createProducer();
         final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
                                                                                                                    
-        //Run several CDRs                                                                                         
+        //Produce from NUM_THREADS threads
         for (int i = 0; i < NUM_THREADS; i++)
             executorService.execute(new DataReporter(producer));                                      
     }                                                                                                              
                                                                                                                    
-    private static final Logger logger =                                                                           
-            LoggerFactory.getLogger(DataReporter.class);                                                           
-                                                                                                                   
+    private static final Logger logger = LoggerFactory.getLogger(DataReporter.class);                                                           
+        
+    
+    /**
+     * Create a Kafka producer
+     * @return a Kafka producer
+     */
     private static Producer<Long, String> createProducer() 
     {                                                       
         try 
-	{                                                                                                      
-            Properties properties = new Properties();                                                              
+	    {
+            Properties properties = new Properties();
             properties.put("bootstrap.servers", BOOTSTRAP_SERVERS);
-            properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());            
-            properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());  
-            properties.put("acks", "all");      
-
-            for (Object s : properties.keySet())                                                                   
-            {                                                                                                      
-                System.out.println(s + ":" + properties.get(s));                                                   
-            }                                                                                                      
-            return new KafkaProducer<>(properties);                                                                
-        } 
-	catch (Exception e)
-	{                                                                                     
+            properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
+            properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+            properties.put("acks", "all");
+            for (Object s : properties.keySet())
+            {
+                System.out.println(s + ":" + properties.get(s));
+            }                                                                
+            return new KafkaProducer<>(properties);
+        }
+        catch (Exception e)
+        {                                                                                     
             System.out.println("Exception: " + e);                                                                 
             System.exit(1);                                                                                        
             return null;                                                                                           
