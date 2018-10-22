@@ -66,11 +66,6 @@ public class DataReporter implements Runnable
                 }
                 sentCount++;
             } 
-            catch (InterruptedException e) 
-            {
-                Thread.interrupted();
-                break;
-            } 
             catch (Exception e)
             {
                 System.out.println("Exception in DataReporter:run " + e.getMessage());
