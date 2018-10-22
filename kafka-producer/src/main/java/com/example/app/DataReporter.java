@@ -54,7 +54,7 @@ public class DataReporter implements Runnable
                 
                 //Send record and calculate latency of send
                 long startTime = System.currentTimeMillis();
-                producer.send(record).get();
+                producer.send(record);
                 long stopTime = System.currentTimeMillis();
                 sumLatency += stopTime - startTime;
                 
