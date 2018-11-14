@@ -62,8 +62,7 @@ public class DataReporter implements Runnable
                 String data = createPaddedMessage(sentCount, 1000);
                 
                 //Create message
-                long time = System.currentTimeMillis();
-                final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(topic, time, data);                
+                final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(topic, System.currentTimeMillis(), data);                
                 
                 //Send record (asynchronously) and calculate latency of send
                 long startTime = System.currentTimeMillis();
