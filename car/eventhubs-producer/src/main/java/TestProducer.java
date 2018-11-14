@@ -40,10 +40,10 @@ public class TestProducer {
     private static Producer<Long, String> createKafkaProducer() {
         try {
             Properties properties = new Properties();      
-            properties.put("bootstrap.servers", FQDN);
+            properties.setProperty("bootstrap.servers", FQDN);
             properties.put("security.protocol", "SASL_SSL");
             properties.put("sasl.mechanism", "PLAIN");
-            properties.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$ConnectionString\" password=\"" + CONNECTION_STRING + "\"");
+            properties.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$ConnectionString\" password=\"" + CONNECTION_STRING + "\";");
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());            
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());        
             for (Object s : properties.keySet())                                                                   
