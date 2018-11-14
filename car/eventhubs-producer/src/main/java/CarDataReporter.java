@@ -20,7 +20,6 @@ public class CarDataReporter implements Runnable {
 
     //Constants
     private static final String alphabet = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private String CONFIG_PATH;
 
     //Instance
     private Producer<Long, String> producer;
@@ -77,25 +76,21 @@ public class CarDataReporter implements Runnable {
         }
     }
 
-    public CarDataReporter(final Producer<Long, String> producer, String CONFIG_PATH)
+    public CarDataReporter(final Producer<Long, String> producer)
     {
         this.producer = producer;
-        this.CONFIG_PATH = CONFIG_PATH;
     }
 
     private TelemetryClient createTelemetryClient()
     {
         //Set instrumentation key to point to the proper AppInsights instance
         try {
-            Properties p = new Properties();
-            p.load(new FileReader(CONFIG_PATH));
-            String iKey = (String) p.get("appinsights.instrumentation.key");
+            String iKey = System.getenv("APPINSIGHTS_IKEY");
             TelemetryClient appInsights = new TelemetryClient();
             appInsights.getContext().setInstrumentationKey(iKey);
             TelemetryConfiguration.getActive().getChannel().setDeveloperMode(true);
 
             appInsights.getContext().getTags().put(ContextTagKeys.getKeys().getDeviceId(), "Java producer to prod");
-            System.out.println("AppInsights iKey set to " + iKey);
             System.out.println("AppInsights iKey set to " + appInsights.getContext().getInstrumentationKey());
             return appInsights;
 

@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 public class TestProducer {
 
     private final static int NUM_THREADS = Integer.parseInt(System.getenv("NUM_THREADS"));
-    private final static String CONFIG_PATH = "src/main/resources/producer.config";
+    //private final static String CONFIG_PATH = "src/main/resources/producer.config";
     private final static String CONNECTION_STRING = System.getenv("CONNECTION_STRING");
     private final static String FQDN = CONNECTION_STRING.substring(CONNECTION_STRING.indexOf("sb://") + 5, CONNECTION_STRING.indexOf("/;")) + ":9093";
 
@@ -32,7 +32,7 @@ public class TestProducer {
                                                                                                                    
         //Produce from NUM_THREADS threads
         for (int i = 0; i < NUM_THREADS; i++)
-            executorService.execute(new CarDataReporter(producer, CONFIG_PATH));
+            executorService.execute(new CarDataReporter(producer));
     }
 
     private static final Logger logger = LoggerFactory.getLogger(CarDataReporter.class);
@@ -40,9 +40,10 @@ public class TestProducer {
     private static Producer<Long, String> createKafkaProducer() {
         try {
             Properties properties = new Properties();      
-            properties.load(new FileReader(CONFIG_PATH));
             properties.put("bootstrap.servers", FQDN);
-            properties.put("sasl.jaas.config", properties.getProperty("sasl.jaas.config").replace("{YOUR.EVENTHUBS.CONNECTION.STRING}", CONNECTION_STRING));
+            properties.put("security.protocol", "SASL_SSL");
+            properties.put("sasl.mechanism", "PLAIN");
+            properties.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$ConnectionString\" password=\"" + CONNECTION_STRING + "\"");
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());            
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());        
             for (Object s : properties.keySet())                                                                   
