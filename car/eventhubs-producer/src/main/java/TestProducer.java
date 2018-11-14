@@ -37,7 +37,7 @@ public class TestProducer {
 
     private static final Logger logger = LoggerFactory.getLogger(CarDataReporter.class);
 
-    private static Producer<Long, String> createProducer() {
+    private static Producer<Long, String> createKafkaProducer() {
         try {
             Properties properties = new Properties();      
             properties.load(new FileReader(CONFIG_PATH));
