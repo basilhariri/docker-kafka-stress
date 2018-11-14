@@ -95,7 +95,7 @@ public class CarDataReporter implements Runnable {
             TelemetryConfiguration.getActive().getChannel().setDeveloperMode(true);
 
             appInsights.getContext().getTags().put(ContextTagKeys.getKeys().getDeviceId(), "Java producer to prod");
-
+            System.out.println("AppInsights iKey set to " + iKey);
             System.out.println("AppInsights iKey set to " + appInsights.getContext().getInstrumentationKey());
             return appInsights;
 
