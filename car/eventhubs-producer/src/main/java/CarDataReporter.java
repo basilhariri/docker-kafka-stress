@@ -126,7 +126,7 @@ public class CarDataReporter implements Runnable {
                 //Send latency and number of sends
                 if (sentCount % trackMetricRate == 0 && sentCount > 0)
                 {
-                    System.out.printf("Topic = %s, latency = %6.4fms (refreshed every million events)", topic, sumLatency/trackMetricRate);
+                    System.out.printf("Topic = %s, latency = %6.4fms (refreshed every million events)\n", topic, sumLatency/trackMetricRate);
                     appInsights.trackMetric("numMessages", (double) trackMetricRate);
                     appInsights.trackMetric("latency", sumLatency / trackMetricRate);
                     sumLatency = 0.0;
