@@ -49,6 +49,8 @@ public class CarDataReporter implements Runnable {
             manufacturer = MANUFACTURERS[(int) (Math.random() * MANUFACTURERS.length)];
 
             //random date in 01/2017 - 11/2018
+	    long offset = Timestamp.valueOf("2017-01-01 00:00:00").getTime();
+            long end = Timestamp.valueOf("2018-11-01 00:00:00").getTime();
             long diff = end - offset;
             dateOfLastMaintenance = (offset + (long)(Math.random() * diff)) / 1000;  //divide by 1000 because Spark's Unix time converter requires seconds
 
