@@ -20,7 +20,6 @@ import java.util.concurrent.Executors;
 public class TestProducer {
 
     private final static int NUM_THREADS = Integer.parseInt(System.getenv("NUM_THREADS"));
-    //private final static String CONFIG_PATH = "src/main/resources/producer.config";
     private final static String CONNECTION_STRING = System.getenv("CONNECTION_STRING");
     private final static String FQDN = CONNECTION_STRING.substring(CONNECTION_STRING.indexOf("sb://") + 5, CONNECTION_STRING.indexOf("/;")) + ":9093";
 
@@ -51,8 +50,8 @@ public class TestProducer {
                 System.out.println(s + ":" + properties.get(s));                                                   
             }
 
-            AdminClient ac = AdminClient.create(properties);
-            System.out.println("Topics in broker" + ac.listTopics().names().get());
+            //AdminClient ac = AdminClient.create(properties);
+            //System.out.println("Topics in broker" + ac.listTopics().names().get());
             return new KafkaProducer<>(properties);
 
         } catch (Exception e){

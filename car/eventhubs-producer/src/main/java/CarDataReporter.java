@@ -1,10 +1,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.applicationinsights.extensibility.context.ContextTagKeys;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import com.microsoft.applicationinsights.TelemetryClient;
-import com.microsoft.applicationinsights.TelemetryConfiguration;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -52,8 +49,6 @@ public class CarDataReporter implements Runnable {
             manufacturer = MANUFACTURERS[(int) (Math.random() * MANUFACTURERS.length)];
 
             //random date in 01/2017 - 11/2018
-            long offset = Timestamp.valueOf("2017-01-01 00:00:00").getTime();
-            long end = Timestamp.valueOf("2018-11-01 00:00:00").getTime();
             long diff = end - offset;
             dateOfLastMaintenance = (offset + (long)(Math.random() * diff)) / 1000;  //divide by 1000 because Spark's Unix time converter requires seconds
 
@@ -81,32 +76,12 @@ public class CarDataReporter implements Runnable {
         this.producer = producer;
     }
 
-    private TelemetryClient createTelemetryClient()
-    {
-        //Set instrumentation key to point to the proper AppInsights instance
-        try {
-            String iKey = System.getenv("APPINSIGHTS_IKEY");
-            TelemetryClient appInsights = new TelemetryClient();
-            appInsights.getContext().setInstrumentationKey(iKey);
-            TelemetryConfiguration.getActive().getChannel().setDeveloperMode(true);
-
-            appInsights.getContext().getTags().put(ContextTagKeys.getKeys().getDeviceId(), "Java producer to prod");
-            System.out.println("AppInsights iKey set to " + appInsights.getContext().getInstrumentationKey());
-            return appInsights;
-
-        } catch (Exception e){
-            System.out.println("Exception while creating TelemetryClient: " + e);
-            return null;
-        }
-    }
-
     @Override
     public void run() {
 
 
-        TelemetryClient appInsights = createTelemetryClient();  //AppInsights telemetry tracker
         long sentCount = 0;                                     //Messages sent thus far
-        int trackMetricRate = 1000000;                          //How often do we send metrics to AppInsights (pricing consideration)
+        int trackMetricRate = 1000000;                          //How often do we print latency
         double sumLatency = 0.0;                                //Used to calculate latency
         String topic = System.getenv("TOPIC");                  //Kafka topic
         System.out.println("Topic = " + topic);
@@ -120,18 +95,15 @@ public class CarDataReporter implements Runnable {
                 //Send record (asynchronously) and capture latency of send
                 long startTime = System.currentTimeMillis();
                 producer.send(record);
-                long stopTime = System.currentTimeMillis();
-                sumLatency += stopTime - startTime;
-
+                sumLatency += System.currentTimeMillis() - startTime;
+		sentCount++;
                 //Send latency and number of sends
-                if (sentCount % trackMetricRate == 0 && sentCount > 0)
+                if (sentCount % trackMetricRate == 0)
                 {
                     System.out.printf("Topic = %s, latency = %6.4fms (refreshed every million events)\n", topic, sumLatency/trackMetricRate);
-                    appInsights.trackMetric("numMessages", (double) trackMetricRate);
-                    appInsights.trackMetric("latency", sumLatency / trackMetricRate);
                     sumLatency = 0.0;
+		    sentCount = 0;
                 }
-                sentCount++;
 
             } catch (Exception e) {
                 System.out.println(e);
