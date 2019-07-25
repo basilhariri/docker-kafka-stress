@@ -1,4 +1,4 @@
 # docker-kafka-stress
 ```bash
-sudo run --env-file env.list basilhariri/eh-kafka-producer
+sudo docker run --env-file env.list basilhariri/eh-kafka-producer
 ```
