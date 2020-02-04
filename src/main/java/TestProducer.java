@@ -21,8 +21,8 @@ import java.util.concurrent.Executors;
 
 public class TestProducer {
 
-    private final static int NUM_THREADS = 1;//Integer.parseInt(System.getenv("NUM_THREADS"));
-    private final static String CONNECTION_STRING ="Endpoint=sb://ns-int7-bn3-005-kafka-spark.servicebus.int7.windows-int.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=lMTNo9tm/P0HiLi98LxVYOH9M+rh8dU1TLvZVb7U8eY="; //System.getenv("CONNECTION_STRING");
+    private final static int NUM_THREADS = System.getenv("NUM_THREADS");
+    private final static String CONNECTION_STRING = System.getenv("CONNECTION_STRING");
     private final static String FQDN = CONNECTION_STRING.substring(CONNECTION_STRING.indexOf("sb://") + 5, CONNECTION_STRING.indexOf("/;")) + ":9093";
 
     public static void main(String... args) throws Exception {
