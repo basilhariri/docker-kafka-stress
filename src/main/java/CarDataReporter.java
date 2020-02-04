@@ -83,7 +83,7 @@ public class CarDataReporter implements Runnable {
 
 
         long sentCount = 0;                                     //Messages sent thus far
-        int trackMetricRate = 10000;                          	//How often do we print latency
+        int trackMetricRate = 100;                          	//How often do we print latency
         double sumLatency = 0.0;                                //Used to calculate latency
         String topic = System.getenv("TOPIC");                  //Kafka topic
         System.out.println("Topic = " + topic);
@@ -94,17 +94,13 @@ public class CarDataReporter implements Runnable {
                 Car c = new Car();
                 final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(topic, System.currentTimeMillis(), c.toJson());
 
-                //Send record (asynchronously) and capture latency of send
-                long startTime = System.currentTimeMillis();
+                //Send record (asynchronously)
                 producer.send(record);
-                sumLatency += System.currentTimeMillis() - startTime;
 		sentCount++;
                 //Send latency and number of sends
-                if (sentCount % trackMetricRate == 0 && sentCount != 0)
+                if (sentCount % trackMetricRate == 0)
                 {
-                    System.out.printf("Topic = %s, latency = %6.4fms (refreshed every " + trackMetricRate + " events)\n", topic, sumLatency/trackMetricRate);
-                    sumLatency = 0.0;
-		    sentCount = 0;
+                    System.out.printf("Topic = %s, sent = %d\n", topic, sentCount);
                 }
 
             } catch (Exception e) {
