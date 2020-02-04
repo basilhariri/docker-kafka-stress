@@ -85,7 +85,7 @@ public class CarDataReporter implements Runnable {
         long sentCount = 0;                                     //Messages sent thus far
         int trackMetricRate = 10000;                          	//How often do we print latency
         double sumLatency = 0.0;                                //Used to calculate latency
-        String topic = "spark-kafka-connector-in";//System.getenv("TOPIC");                  //Kafka topic
+        String topic = System.getenv("TOPIC");                  //Kafka topic
         System.out.println("Topic = " + topic);
 
         while (true) {
