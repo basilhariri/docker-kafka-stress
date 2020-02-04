@@ -94,8 +94,8 @@ public class CarDataReporter implements Runnable {
                 Car c = new Car();
                 final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(topic, System.currentTimeMillis(), c.toJson());
 
-                //Send record (asynchronously)
-                producer.send(record);
+                //Send record (synchronously)
+                producer.send(record).get();
 		sentCount++;
                 //Send latency and number of sends
                 if (sentCount % trackMetricRate == 0)
