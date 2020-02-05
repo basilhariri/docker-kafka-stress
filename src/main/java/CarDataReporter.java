@@ -1,5 +1,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.azure.eventhubs.EventData;
+import com.microsoft.azure.eventhubs.EventHubClient;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
@@ -19,9 +21,11 @@ public class CarDataReporter implements Runnable {
     private static final String alphabet = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     //Instance
-    private Producer<Long, String> producer;
+    private Producer<Long, String> kafkaProducer = null;
+    private EventHubClient ehClient = null;
 
-    private class Car {
+    private class Car 
+    {
 
         private final String[] MANUFACTURERS =
         {
@@ -40,7 +44,8 @@ public class CarDataReporter implements Runnable {
         public final int odometer;
         public final long dateOfLastMaintenance;
 
-        private Car(){
+        private Car()
+        {
             //construct 17 alpha-digit VIN
             String temp_vin = "";
             for (int i = 0; i < 17; i++) { temp_vin += alphabet.charAt((int) (Math.random() * alphabet.length())); }
@@ -49,7 +54,7 @@ public class CarDataReporter implements Runnable {
             manufacturer = MANUFACTURERS[(int) (Math.random() * MANUFACTURERS.length)];
 
             //random date in 01/2017 - 11/2018
-	    long offset = Timestamp.valueOf("2017-01-01 00:00:00").getTime();
+	        long offset = Timestamp.valueOf("2017-01-01 00:00:00").getTime();
             long end = Timestamp.valueOf("2018-11-01 00:00:00").getTime();
             long diff = end - offset;
             dateOfLastMaintenance = (offset + (long)(Math.random() * diff)) / 1000;  //divide by 1000 because Spark's Unix time converter requires seconds
@@ -62,11 +67,15 @@ public class CarDataReporter implements Runnable {
             odometer = (int) (Math.random() * 100001);
         }
 
-        private String toJson() {
+        private String toJson() 
+        {
             ObjectMapper mapper = new ObjectMapper();
-            try {
+            try 
+            {
                 return mapper.writeValueAsString(this);
-            } catch(JsonProcessingException e){
+            } 
+            catch(JsonProcessingException e)
+            {
                 System.out.println(e.getMessage());
                 return "{}";
             }
@@ -75,35 +84,49 @@ public class CarDataReporter implements Runnable {
 
     public CarDataReporter(final Producer<Long, String> producer)
     {
-        this.producer = producer;
+        this.kafkaProducer = producer;
+    }
+
+    public CarDataReporter(final EventHubClient ehClient)
+    {
+        this.ehClient = ehClient;
     }
 
     @Override
     public void run() {
-
-
         long sentCount = 0;                                     //Messages sent thus far
         int trackMetricRate = 100;                          	//How often do we print latency
         double sumLatency = 0.0;                                //Used to calculate latency
         String topic = System.getenv("TOPIC");                  //Kafka topic
         System.out.println("Topic = " + topic);
 
-        while (true) {
-            try {
-                //Make a new car and Kafka record
+        while (true) 
+        {
+            try 
+            {
+                //Make a new car and send
                 Car c = new Car();
-                final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(topic, System.currentTimeMillis(), c.toJson());
 
-                //Send record (synchronously)
-                producer.send(record).get();
-		sentCount++;
+                //this should actually be done using polymorphism - doing this for speed of development and readibility
+                if (this.kafkaProducer != null){
+                    final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(topic, System.currentTimeMillis(), c.toJson());
+                    //Send record (synchronously)
+                    this.kafkaProducer.send(record).get();
+                }
+                else 
+                {
+                    ehClient.sendSync(c.toJson().getBytes());
+                }
+
+                sentCount++;
                 //Send latency and number of sends
                 if (sentCount % trackMetricRate == 0)
                 {
                     System.out.printf("Topic = %s, sent = %d\n", topic, sentCount);
                 }
-
-            } catch (Exception e) {
+            } 
+            catch (Exception e) 
+            {
                 System.out.println(e);
             }
         }
