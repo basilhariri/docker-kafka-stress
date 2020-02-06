@@ -1,16 +1,16 @@
 # docker-kafka-stress
 
-##To run
+## Run
 ```bash
 sudo docker run --env-file env.list basilhariri/car-producer:latest
 ```
 
-##To build
+## Build
 ```bash
 sudo docker build -t basilhariri/car-producer:latest --no-cache .
 ```
 
-##To push
+## Push
 ```bash
 sudo docker push basilhariri/car-producer:latest
 ```
