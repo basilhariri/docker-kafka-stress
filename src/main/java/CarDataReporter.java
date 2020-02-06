@@ -115,7 +115,7 @@ public class CarDataReporter implements Runnable {
                 }
                 else 
                 {
-                    ehClient.sendSync(c.toJson().getBytes());
+                    ehClient.sendSync(EventData.create(c.toJson().getBytes()));
                 }
 
                 sentCount++;
