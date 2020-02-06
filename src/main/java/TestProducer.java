@@ -26,7 +26,7 @@ public class TestProducer
 
     public static void main(String... args) throws Exception 
     {
-        final ScheduledExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
+        final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(NUM_THREADS);
         if(KAFKA)
         {
             final Producer<Long, String> producer = createKafkaProducer();
