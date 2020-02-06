@@ -26,7 +26,7 @@ public class TestProducer
 
     public static void main(String... args) throws Exception 
     {
-        final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
+        final ScheduledExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
         if(KAFKA)
         {
             final Producer<Long, String> producer = createKafkaProducer();
@@ -38,7 +38,7 @@ public class TestProducer
         }
         else
         {
-            final EventHubClient ehClient = EventHubClient.createFromConnectionStringSync(String.format("%s;EntityPath=%s", CONNECTION_STRING, TOPIC));
+            final EventHubClient ehClient = EventHubClient.createSync(String.format("%s;EntityPath=%s", CONNECTION_STRING, TOPIC), executorService);
             //Produce from NUM_THREADS threads
             for (int i = 0; i < NUM_THREADS; i++)
             {
