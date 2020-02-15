@@ -13,6 +13,8 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
 public class KafkaTest extends Test
 {
@@ -43,6 +45,7 @@ public class KafkaTest extends Test
     
     public boolean runReceiveTests() throws Exception
     {
+        System.out.println("KAFKA: Receive tests");
         Consumer<Long, String> consumer = createKafkaConsumer(this.CONNECTION_STRING, this.FQDN);
         if(consumer != null)
         {
@@ -112,7 +115,7 @@ public class KafkaTest extends Test
         {
             System.out.println("KAFKA: Creating Kafka consumer...");
             Properties properties = new Properties();
-            properties.setProperty("bootstrap.servers", fqdn);
+            properties.put("bootstrap.servers", fqdn);
             properties.put("security.protocol", "SASL_SSL");
             properties.put("sasl.mechanism", "OAUTHBEARER");
             properties.put("sasl.jaas.config", "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required;");
@@ -121,14 +124,14 @@ public class KafkaTest extends Test
             properties.put("request.timeout.ms", "60000");
             properties.put("session.timeout.ms", "30000");
             properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "KafkaExampleConsumer#" + UUID.randomUUID());
-            properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
-            properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-            final Consumer<Long, String> consumer = new KafkaConsumer<>(properties);
+            properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
+            properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
             System.out.println("KAFKA: Properties used for Kafka consumer:");
             for (Object s : properties.keySet())
             {
                 System.out.println("\t" + s + ":" + properties.get(s));
             }
+            final Consumer<Long, String> consumer = new KafkaConsumer<>(properties);
             return consumer;
         }
         catch (Exception e)
