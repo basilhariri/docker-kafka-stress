@@ -123,6 +123,7 @@ public class KafkaTest extends Test
             properties.put("auto.offset.reset", "earliest");
             properties.put("request.timeout.ms", "60000");
             properties.put("session.timeout.ms", "30000");
+            properties.put("group.id", "$Default");
             properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "KafkaExampleConsumer#" + UUID.randomUUID());
             properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
             properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
