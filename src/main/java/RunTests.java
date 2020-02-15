@@ -8,13 +8,12 @@ public class RunTests
 
     public static void main(String... args) throws Exception 
     {
-        System.out.println((char)27 + "[31m" + "ERROR MESSAGE IN RED");
-        System.out.println((char)27 + "[32m" + "ERROR MESSAGE IN RED");
-        System.out.println((char)27 + "[33m" + "ERROR MESSAGE IN RED");
-        System.out.println((char)27 + "[34m" + "ERROR MESSAGE IN RED");
-        System.out.println((char)27 + "[35m" + "ERROR MESSAGE IN RED");
-        System.out.println((char)27 + "[36m" + "ERROR MESSAGE IN RED");
-
+        // System.out.println((char)27 + "[31m" + "ERROR MESSAGE IN RED");
+        // System.out.println((char)27 + "[32m" + "ERROR MESSAGE IN RED");
+        // System.out.println((char)27 + "[33m" + "ERROR MESSAGE IN RED");
+        // System.out.println((char)27 + "[34m" + "ERROR MESSAGE IN RED");
+        // System.out.println((char)27 + "[35m" + "ERROR MESSAGE IN RED");
+        // System.out.println((char)27 + "[36m" + "ERROR MESSAGE IN RED");
 
         //Kafka
         Test test = new KafkaTest(CONNECTION_STRING, TOPIC);

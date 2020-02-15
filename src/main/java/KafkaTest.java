@@ -114,11 +114,12 @@ public class KafkaTest extends Test
             Properties properties = new Properties();
             properties.setProperty("bootstrap.servers", fqdn);
             properties.put("security.protocol", "SASL_SSL");
-            properties.put("sasl.mechanism", "PLAIN");
+            properties.put("sasl.mechanism", "OAUTHBEARER");
+            properties.put("sasl.jaas.config", "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required;");
+            properties.put("sasl.login.callback.handler.class", "KafkaAuthenticateCallbackHandler");
             properties.put("auto.offset.reset", "earliest");
             properties.put("request.timeout.ms", "60000");
             properties.put("session.timeout.ms", "30000");
-            properties.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$ConnectionString\" password=\"" + connStr + "\";");
             properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "KafkaExampleConsumer#" + UUID.randomUUID());
             properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
             properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -146,7 +147,9 @@ public class KafkaTest extends Test
             Properties properties = new Properties();
             properties.setProperty("bootstrap.servers", fqdn);
             properties.put("security.protocol", "SASL_SSL");
-            properties.put("sasl.mechanism", "PLAIN");
+            properties.put("sasl.mechanism", "OAUTHBEARER");
+            properties.put("sasl.jaas.config", "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required;");
+            properties.put("sasl.login.callback.handler.class", "KafkaAuthenticateCallbackHandler");
             System.out.println("KAFKA: Properties used for admin client:");
             for (Object s : properties.keySet())
             {
