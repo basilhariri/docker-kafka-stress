@@ -8,7 +8,6 @@ public class RunTests
 
     public static void main(String... args) throws Exception 
     {
-        System.out.println((char)27 + "[31m" + "TEST" + (char)27 + "[39m");
         // System.out.println((char)27 + "[32m" + "ERROR MESSAGE IN RED");
         // System.out.println((char)27 + "[39m" + "ERROR MESSAGE IN RED");
         // System.out.println((char)27 + "[34m" + "ERROR MESSAGE IN RED");
@@ -20,7 +19,7 @@ public class RunTests
         runTests(test);
         //AMQP
         test = new AMQPTest(CONNECTION_STRING, TOPIC);
-        //runTests(test);
+        runTests(test);
         //HTTP
         test = new HTTPTest(CONNECTION_STRING, TOPIC);
         //runTests(test);
@@ -77,10 +76,12 @@ public class RunTests
         else if (!SHOULD_SUCCEED && e != null)
         {
             printSuccess("PASS (Expected: Connection denied, Result: Connection denied exception:" + e);
+            e.printStackTrace();
         }
         else if (SHOULD_SUCCEED && e != null)
         {
             printFailure("FAIL (Expected: Connection accepted, Result: Connection denied with exception:" + e);
+            e.printStackTrace();
         }
         else
         {

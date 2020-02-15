@@ -11,20 +11,18 @@ public class AMQPTest extends Test
 {
 
     private EventHubClient ehClient;
-    private URI NAMESPACE;
-    private final String CONNECTION_STRING;
+    private final String NAMESPACE;
     private final String TOPIC;
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     public AMQPTest(String cs, String topic)
     {
-        CONNECTION_STRING = cs;
-        TOPIC = topic;
+        this.TOPIC = topic;
+        this.NAMESPACE = cs.substring(cs.indexOf("sb://") + 5, cs.indexOf("."));
         try
         {
-            NAMESPACE = new URI(CONNECTION_STRING.substring(CONNECTION_STRING.indexOf("sb://") + 5, CONNECTION_STRING.indexOf(".")));
             final ConnectionStringBuilder connStr = new ConnectionStringBuilder()
-            .setEndpoint(this.NAMESPACE)
+            .setNamespaceName(this.NAMESPACE)
             .setEventHubName(this.TOPIC)
             .setAuthentication(ConnectionStringBuilder.MANAGED_IDENTITY_AUTHENTICATION);
 
@@ -34,7 +32,8 @@ public class AMQPTest extends Test
         catch (Exception e)
         {
             this.ehClient = null;
-            System.out.println("AMQP: Failed to create EventHub client: " + e);
+            System.out.println("AMQP: Failed to create EventHub client: ");
+            e.printStackTrace();
             System.out.println("AMQP: Skipping all AMQP tests due to client creation failure");
         }
     }

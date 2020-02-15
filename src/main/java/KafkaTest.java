@@ -49,7 +49,7 @@ public class KafkaTest extends Test
         Consumer<Long, String> consumer = createKafkaConsumer(this.CONNECTION_STRING, this.FQDN);
         if(consumer != null)
         {
-            System.out.println("KAFKA: Running send tests");
+            System.out.println("KAFKA: Running receive tests");
             consumer.subscribe(Collections.singleton(this.TOPIC));
             consumer.poll(Duration.ofSeconds(10));
             return true;
@@ -75,10 +75,10 @@ public class KafkaTest extends Test
         admin.createTopics(Collections.singleton(new NewTopic("createdTopic" + UUID.randomUUID(), 2, (short) 0)));
     }
 
-    public void listTopicsTest(AdminClient admin)
+    public void listTopicsTest(AdminClient admin) throws Exception
     {
         System.out.println("KAFKA: Running listTopics test");
-        System.out.println(admin.listTopics());
+        System.out.println(admin.listTopics().names().get().iterator().next());
     }
 
     private static Producer<Long, String> createKafkaProducer(String connStr, String fqdn) 
@@ -104,6 +104,7 @@ public class KafkaTest extends Test
         catch (Exception e)
         {
             System.out.println("KAFKA: Kafka producer creation failed: " + e);
+            e.printStackTrace();
             System.out.println("KAFKA: Skipping send tests.");
             return null;
         }
@@ -138,6 +139,7 @@ public class KafkaTest extends Test
         catch (Exception e)
         {
             System.out.println("KAFKA: Kafka consumer creation failed: " + e);
+            e.printStackTrace();
             System.out.println("KAFKA: Skipping receive tests.");
             return null;
         }
@@ -164,6 +166,7 @@ public class KafkaTest extends Test
         catch (Exception e)
         {
             System.out.println("KAFKA: Kafka AdminClient creation failed: " + e);
+            e.printStackTrace();
             System.out.println("KAFKA: Skipping management tests.");
             return null;
         }
