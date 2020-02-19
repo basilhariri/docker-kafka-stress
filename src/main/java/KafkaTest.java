@@ -1,7 +1,7 @@
 import java.util.Properties;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.UUID;
+import java.time.Duration;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -16,26 +16,25 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+
 public class KafkaTest extends Test
 {
-    private String CONNECTION_STRING;
     private String TOPIC;
     private String FQDN;
 
-    public KafkaTest(String connStr, String topic)
+    public KafkaTest(String ns, String topic)
     {
-        CONNECTION_STRING = connStr;
+        FQDN = ns + ".servicebus.windows.net";
         TOPIC = topic;
-        FQDN = CONNECTION_STRING.substring(CONNECTION_STRING.indexOf("sb://") + 5, CONNECTION_STRING.indexOf("/;")) + ":9093";
     }
 
     public boolean runSendTests() throws Exception
     {
-        System.out.println("KAFKA: Send tests");
-        Producer<Long, String> producer = createKafkaProducer(this.CONNECTION_STRING, this.FQDN);
+        RunTests.printThreadSafe("KAFKA: Send tests");
+        Producer<Long, String> producer = createKafkaProducer(this.FQDN);
         if(producer != null)
         {
-            System.out.println("KAFKA: Running send tests");
+            RunTests.printThreadSafe("KAFKA: Running send tests");
             ProducerRecord<Long, String> record = new ProducerRecord<Long,String>(this.TOPIC, TEST_MESSAGE);
             producer.send(record).get();
             return true;
@@ -45,11 +44,11 @@ public class KafkaTest extends Test
     
     public boolean runReceiveTests() throws Exception
     {
-        System.out.println("KAFKA: Receive tests");
-        Consumer<Long, String> consumer = createKafkaConsumer(this.CONNECTION_STRING, this.FQDN);
+        RunTests.printThreadSafe("KAFKA: Receive tests");
+        Consumer<Long, String> consumer = createKafkaConsumer(this.FQDN);
         if(consumer != null)
         {
-            System.out.println("KAFKA: Running receive tests");
+            RunTests.printThreadSafe("KAFKA: Running receive tests");
             consumer.subscribe(Collections.singleton(this.TOPIC));
             consumer.poll(Duration.ofSeconds(10));
             return true;
@@ -59,7 +58,7 @@ public class KafkaTest extends Test
 
     public boolean runManagementTests() throws Exception
     {
-        AdminClient admin = createAdminClient(this.CONNECTION_STRING, this.FQDN);
+        AdminClient admin = createAdminClient(this.FQDN);
         if(admin != null)
         {
             createTopicsTest(admin);
@@ -71,21 +70,21 @@ public class KafkaTest extends Test
 
     public void createTopicsTest(AdminClient admin)
     {
-        System.out.println("KAFKA: Running createTopics test");
+        RunTests.printThreadSafe("KAFKA: Running createTopics test");
         admin.createTopics(Collections.singleton(new NewTopic("createdTopic" + UUID.randomUUID(), 2, (short) 0)));
     }
 
     public void listTopicsTest(AdminClient admin) throws Exception
     {
-        System.out.println("KAFKA: Running listTopics test");
-        System.out.println(admin.listTopics().names().get().iterator().next());
+        RunTests.printThreadSafe("KAFKA: Running listTopics test");
+        RunTests.printThreadSafe(admin.listTopics().names().get().iterator().next());
     }
 
-    private static Producer<Long, String> createKafkaProducer(String connStr, String fqdn) 
+    private static Producer<Long, String> createKafkaProducer(String fqdn) 
     {
         try 
         {
-            System.out.println("KAFKA: Creating Kafka producer...");
+            RunTests.printThreadSafe("KAFKA: Creating Kafka producer...");
             Properties properties = new Properties();
             properties.setProperty("bootstrap.servers", fqdn);
             properties.put("security.protocol", "SASL_SSL");
@@ -94,27 +93,27 @@ public class KafkaTest extends Test
             properties.put("sasl.login.callback.handler.class", "KafkaAuthenticateCallbackHandler");
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-            System.out.println("KAFKA: Properties used for Kafka producer:");
+            RunTests.printThreadSafe("KAFKA: Properties used for Kafka producer:");
             for (Object s : properties.keySet())
             {
-                System.out.println("\t" + s + ":" + properties.get(s));
+                RunTests.printThreadSafe("\t" + s + ":" + properties.get(s));
             }
             return new KafkaProducer<>(properties);
         }
         catch (Exception e)
         {
-            System.out.println("KAFKA: Kafka producer creation failed: " + e);
-            e.printStackTrace();
-            System.out.println("KAFKA: Skipping send tests.");
+            RunTests.printThreadSafe("KAFKA: Kafka producer creation failed: " + e);
+            RunTests.printThreadSafe(e);
+            RunTests.printThreadSafe("KAFKA: Skipping send tests.");
             return null;
         }
     }
 
-    private static Consumer<Long, String> createKafkaConsumer(String connStr, String fqdn)
+    private static Consumer<Long, String> createKafkaConsumer(String fqdn)
     {
         try 
         {
-            System.out.println("KAFKA: Creating Kafka consumer...");
+            RunTests.printThreadSafe("KAFKA: Creating Kafka consumer...");
             Properties properties = new Properties();
             properties.put("bootstrap.servers", fqdn);
             properties.put("security.protocol", "SASL_SSL");
@@ -128,46 +127,46 @@ public class KafkaTest extends Test
             properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "KafkaExampleConsumer#" + UUID.randomUUID());
             properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
             properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-            System.out.println("KAFKA: Properties used for Kafka consumer:");
+            RunTests.printThreadSafe("KAFKA: Properties used for Kafka consumer:");
             for (Object s : properties.keySet())
             {
-                System.out.println("\t" + s + ":" + properties.get(s));
+                RunTests.printThreadSafe("\t" + s + ":" + properties.get(s));
             }
             final Consumer<Long, String> consumer = new KafkaConsumer<>(properties);
             return consumer;
         }
         catch (Exception e)
         {
-            System.out.println("KAFKA: Kafka consumer creation failed: " + e);
-            // e.printStackTrace();
-            System.out.println("KAFKA: Skipping receive tests.");
+            RunTests.printThreadSafe("KAFKA: Kafka consumer creation failed: " + e);
+            RunTests.printThreadSafe(e);
+            RunTests.printThreadSafe("KAFKA: Skipping receive tests.");
             return null;
         }
     }
 
-    private static AdminClient createAdminClient(String connStr, String fqdn)
+    private static AdminClient createAdminClient(String fqdn)
     {
         try 
         {
-            System.out.println("KAFKA: Creating Kafka AdminClient...");
+            RunTests.printThreadSafe("KAFKA: Creating Kafka AdminClient...");
             Properties properties = new Properties();
             properties.setProperty("bootstrap.servers", fqdn);
             properties.put("security.protocol", "SASL_SSL");
             properties.put("sasl.mechanism", "OAUTHBEARER");
             properties.put("sasl.jaas.config", "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required;");
             properties.put("sasl.login.callback.handler.class", "KafkaAuthenticateCallbackHandler");
-            System.out.println("KAFKA: Properties used for admin client:");
+            RunTests.printThreadSafe("KAFKA: Properties used for admin client:");
             for (Object s : properties.keySet())
             {
-                System.out.println("\t" + s + ":" + properties.get(s));
+                RunTests.printThreadSafe("\t" + s + ":" + properties.get(s));
             }
             return AdminClient.create(properties);
         }
         catch (Exception e)
         {
-            System.out.println("KAFKA: Kafka AdminClient creation failed: " + e);
-            e.printStackTrace();
-            System.out.println("KAFKA: Skipping management tests.");
+            RunTests.printThreadSafe("KAFKA: Kafka AdminClient creation failed: " + e);
+            RunTests.printThreadSafe(e);
+            RunTests.printThreadSafe("KAFKA: Skipping management tests.");
             return null;
         }
     }

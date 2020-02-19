@@ -55,7 +55,7 @@ public class KafkaAuthenticateCallbackHandler implements AuthenticateCallbackHan
                     oauthCallback.token(token);
                 } catch (InterruptedException | ExecutionException | TimeoutException | ParseException e) 
                 {
-                    e.printStackTrace();
+                    RunTests.printThreadSafe(e);
                 }
             } 
             else 

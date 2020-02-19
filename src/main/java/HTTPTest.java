@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import java.util.Scanner;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -16,15 +15,13 @@ import org.apache.http.NameValuePair;
 
 public class HTTPTest extends Test
 {
-    private final String CONNECTION_STRING;
     private final String TOPIC;
     private final String NAMESPACE;
 
-    public HTTPTest(String connStr, String topic)
+    public HTTPTest(String namespace, String topic)
     {
-        this.CONNECTION_STRING = connStr;
         this.TOPIC = topic;
-        this.NAMESPACE = connStr.substring(connStr.indexOf("sb://") + 5, connStr.indexOf("."));
+        this.NAMESPACE = namespace;
     }
 
     public boolean runSendTests() throws Exception
@@ -60,7 +57,7 @@ public class HTTPTest extends Test
         catch (UnsupportedEncodingException e)
         {
             System.out.println("UnsupportedEncodingException: " + e);
-            e.printStackTrace();
+            RunTests.printThreadSafe(e);
             return false;
         }
         return true;

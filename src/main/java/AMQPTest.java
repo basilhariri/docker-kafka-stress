@@ -5,20 +5,18 @@ import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.eventhubs.PartitionReceiver;
 import com.microsoft.azure.eventhubs.TimeoutException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.Executors;
 
 public class AMQPTest extends Test
 {
     private EventHubClient ehClient;
     private final String NAMESPACE;
     private final String TOPIC;
-    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
-    public AMQPTest(String cs, String topic)
+    public AMQPTest(String ns, String topic, ScheduledExecutorService executorService)
     {
         this.TOPIC = topic;
-        this.NAMESPACE = cs.substring(cs.indexOf("sb://") + 5, cs.indexOf("."));
-        System.out.println("AMQP: Creating EventHub client...");
+        this.NAMESPACE = ns;
+        RunTests.printThreadSafe("AMQP: Creating EventHub client...");
         try
         {
             final ConnectionStringBuilder connStr = new ConnectionStringBuilder()
@@ -30,18 +28,18 @@ public class AMQPTest extends Test
         catch (Exception e)
         {
             this.ehClient = null;
-            System.out.println("AMQP: Failed to create EventHub client: ");
-            e.printStackTrace();
-            System.out.println("AMQP: Skipping all AMQP tests due to client creation failure");
+            RunTests.printThreadSafe("AMQP: Failed to create EventHub client: ");
+            RunTests.printThreadSafe(e);
+            RunTests.printThreadSafe("AMQP: Skipping all AMQP tests due to client creation failure");
             executorService.shutdown();
         }
     }
 
     public boolean runSendTests() throws Exception
     {
+        RunTests.printThreadSafe("AMQP: Sending...");
         if(ehClient != null)
         {
-            System.out.println("AMQP: Sending...");
             ehClient.sendSync(EventData.create(TEST_MESSAGE.getBytes()));
             return true;
         }
@@ -50,9 +48,9 @@ public class AMQPTest extends Test
     
     public boolean runReceiveTests() throws Exception
     {
+        RunTests.printThreadSafe("AMQP: Receiving...");
         if(ehClient != null)
         {
-            System.out.println("AMQP: Receiving...");
             PartitionReceiver pr = ehClient.createReceiver(EventHubClient.DEFAULT_CONSUMER_GROUP_NAME, "0", EventPosition.fromStartOfStream()).get();
             pr.receiveSync(1);
             return true;
@@ -62,22 +60,21 @@ public class AMQPTest extends Test
 
     public boolean runManagementTests() throws Exception
     {
+        RunTests.printThreadSafe("AMQP: Management tests...");
         if(ehClient != null)
         {
-            System.out.println("AMQP: Getting runtime information...");
+            RunTests.printThreadSafe("AMQP: Getting runtime information...");
             if(ehClient.getRuntimeInformation() == null)
             {
                 throw new TimeoutException("GetRuntimeInfo timed out");
             }
-            System.out.println("AMQP: Getting partition runtime information...");
+            RunTests.printThreadSafe("AMQP: Getting partition runtime information...");
             if(ehClient.getPartitionRuntimeInformation("0") == null)
             {
                 throw new TimeoutException("GetPartitionRuntimeInfo timed out");
             }
-            executorService.shutdown();
             return true;
         }
-        executorService.shutdown();
         return false;
     }
 }
