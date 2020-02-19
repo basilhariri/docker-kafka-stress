@@ -1,0 +1,175 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaces_bahariri_fps_name": {
+            "defaultValue": "bahariri-fps",
+            "type": "String"
+        },
+        "virtualNetworks_bahariri_fps_vm_vnet_externalid": {
+            "defaultValue": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/prod-by3-533-rg/providers/Microsoft.Network/virtualNetworks/bahariri-fps-vm-vnet",
+            "type": "String"
+        },
+        "virtualNetworks_bahariri_fps_vm_vnet_name": {
+            "defaultValue": "bahariri-fps-vm-vnet",
+            "type": "String"
+        },
+        "networkSecurityGroups_rg_cleanupservice_nsg_externalid": {
+            "defaultValue": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/cleanupservice/providers/Microsoft.Network/networkSecurityGroups/rg-cleanupservice-nsg",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-11-01",
+            "name": "[parameters('virtualNetworks_bahariri_fps_vm_vnet_name')]",
+            "location": "westus",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "172.20.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "172.20.0.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[parameters('networkSecurityGroups_rg_cleanupservice_nsg_externalid')]"
+                            },
+                            "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.EventHub",
+                                    "locations": [
+                                        "*"
+                                    ]
+                                }
+                            ],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false,
+                "enableVmProtection": false
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces",
+            "apiVersion": "2018-01-01-preview",
+            "name": "[parameters('namespaces_bahariri_fps_name')]",
+            "location": "West US",
+            "sku": {
+                "name": "Standard",
+                "tier": "Standard",
+                "capacity": 1
+            },
+            "properties": {
+                "zoneRedundant": false,
+                "isAutoInflateEnabled": false,
+                "maximumThroughputUnits": 0,
+                "kafkaEnabled": true
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/AuthorizationRules",
+            "apiVersion": "2017-04-01",
+            "name": "[concat(parameters('namespaces_bahariri_fps_name'), '/RootManageSharedAccessKey')]",
+            "location": "West US",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_bahariri_fps_name'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Manage",
+                    "Send"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs",
+            "apiVersion": "2017-04-01",
+            "name": "[concat(parameters('namespaces_bahariri_fps_name'), '/test')]",
+            "location": "West US",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_bahariri_fps_name'))]"
+            ],
+            "properties": {
+                "messageRetentionInDays": 1,
+                "partitionCount": 4,
+                "status": "Active"
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/ipfilterrules",
+            "apiVersion": "2018-01-01-preview",
+            "name": "[concat(parameters('namespaces_bahariri_fps_name'), '/8c926031-3d7a-406a-b8ea-173474996a51')]",
+            "location": "West US",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_bahariri_fps_name'))]"
+            ],
+            "properties": {
+                "ipMask": "13.64.246.214",
+                "action": "Accept",
+                "filterName": "8c926031-3d7a-406a-b8ea-173474996a51"
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/networkRuleSets",
+            "apiVersion": "2018-01-01-preview",
+            "name": "[concat(parameters('namespaces_bahariri_fps_name'), '/default')]",
+            "location": "West US",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_bahariri_fps_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_bahariri_fps_vm_vnet_name'))]"
+            ],
+            "properties": {
+                "defaultAction": "Deny",
+                "virtualNetworkRules": [
+                    {
+                        "subnet": {
+                            "id": "[concat(parameters('virtualNetworks_bahariri_fps_vm_vnet_externalid'), '/subnets/default')]"
+                        },
+                        "ignoreMissingVnetServiceEndpoint": false
+                    }
+                ],
+                "ipRules": [
+                    {
+                        "ipMask": "13.64.246.214",
+                        "action": "Allow"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/virtualnetworkrules",
+            "apiVersion": "2018-01-01-preview",
+            "name": "[concat(parameters('namespaces_bahariri_fps_name'), '/326100e2-f69d-4268-8503-075374f62b6e-prod-by3-533-rg-', parameters('namespaces_bahariri_fps_name'), '-vm-vnet-default')]",
+            "location": "West US",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_bahariri_fps_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_bahariri_fps_vm_vnet_name'))]"
+            ],
+            "properties": {
+                "virtualNetworkSubnetId": "[concat(parameters('virtualNetworks_bahariri_fps_vm_vnet_externalid'), '/subnets/default')]"
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+            "apiVersion": "2017-04-01",
+            "name": "[concat(parameters('namespaces_bahariri_fps_name'), '/test/$Default')]",
+            "location": "West US",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('namespaces_bahariri_fps_name'), 'test')]",
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_bahariri_fps_name'))]"
+            ],
+            "properties": {}
+        }
+    ]
+}

@@ -75,17 +75,17 @@ public class RunTests
         }
         else if (!SHOULD_SUCCEED && e != null)
         {
-            printSuccess("PASS (Expected: Connection denied, Result: Connection denied exception:" + e);
+            printSuccess("PASS (Expected: Connection denied, Result: Connection denied exception:" + e + ")");
             e.printStackTrace();
         }
         else if (SHOULD_SUCCEED && e != null)
         {
-            printFailure("FAIL (Expected: Connection accepted, Result: Connection denied with exception:" + e);
+            printFailure("FAIL (Expected: Connection accepted, Result: Connection denied with exception:" + e + ")");
             e.printStackTrace();
         }
         else
         {
-            printFailure("FAIL (Expected: Connection denied, Result: Connection accepted");
+            printFailure("FAIL (Expected: Connection denied, Result: Connection accepted)");
         }
         printBoundary();
     }

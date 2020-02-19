@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 
 public class AMQPTest extends Test
 {
-
     private EventHubClient ehClient;
     private final String NAMESPACE;
     private final String TOPIC;
@@ -19,15 +18,14 @@ public class AMQPTest extends Test
     {
         this.TOPIC = topic;
         this.NAMESPACE = cs.substring(cs.indexOf("sb://") + 5, cs.indexOf("."));
+        System.out.println("AMQP: Creating EventHub client...");
         try
         {
             final ConnectionStringBuilder connStr = new ConnectionStringBuilder()
-            .setNamespaceName(this.NAMESPACE)
-            .setEventHubName(this.TOPIC)
-            .setAuthentication(ConnectionStringBuilder.MANAGED_IDENTITY_AUTHENTICATION);
-
+                .setNamespaceName(this.NAMESPACE)
+                .setEventHubName(this.TOPIC)
+                .setAuthentication(ConnectionStringBuilder.MANAGED_IDENTITY_AUTHENTICATION);
             this.ehClient = EventHubClient.createFromConnectionStringSync(connStr.toString(), executorService);
-            System.out.println("AMQP: Creating EventHub client...");
         }
         catch (Exception e)
         {
@@ -35,9 +33,6 @@ public class AMQPTest extends Test
             System.out.println("AMQP: Failed to create EventHub client: ");
             e.printStackTrace();
             System.out.println("AMQP: Skipping all AMQP tests due to client creation failure");
-        }
-        finally
-        {
             executorService.shutdown();
         }
     }
@@ -79,8 +74,10 @@ public class AMQPTest extends Test
             {
                 throw new TimeoutException("GetPartitionRuntimeInfo timed out");
             }
+            executorService.shutdown();
             return true;
         }
+        executorService.shutdown();
         return false;
     }
 }
