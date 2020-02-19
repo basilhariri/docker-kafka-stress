@@ -24,7 +24,7 @@ public class KafkaTest extends Test
 
     public KafkaTest(String ns, String topic)
     {
-        FQDN = ns + ".servicebus.windows.net";
+        FQDN = ns + ".servicebus.windows.net:9093";
         TOPIC = topic;
     }
 
