@@ -3,7 +3,7 @@ import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventhubs.EventPosition;
 import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.eventhubs.PartitionReceiver;
-import java.net.URI;
+import com.microsoft.azure.eventhubs.TimeoutException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,6 +36,10 @@ public class AMQPTest extends Test
             e.printStackTrace();
             System.out.println("AMQP: Skipping all AMQP tests due to client creation failure");
         }
+        finally
+        {
+            executorService.shutdown();
+        }
     }
 
     public boolean runSendTests() throws Exception
@@ -66,9 +70,15 @@ public class AMQPTest extends Test
         if(ehClient != null)
         {
             System.out.println("AMQP: Getting runtime information...");
-            ehClient.getRuntimeInformation();
+            if(ehClient.getRuntimeInformation() == null)
+            {
+                throw new TimeoutException("GetRuntimeInfo timed out");
+            }
             System.out.println("AMQP: Getting partition runtime information...");
-            ehClient.getPartitionRuntimeInformation("0");
+            if(ehClient.getPartitionRuntimeInformation("0") == null)
+            {
+                throw new TimeoutException("GetPartitionRuntimeInfo timed out");
+            }
             return true;
         }
         return false;

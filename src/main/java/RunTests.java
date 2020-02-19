@@ -17,11 +17,13 @@ public class RunTests
         //Kafka
         Test test = new KafkaTest(CONNECTION_STRING, TOPIC);
         runTests(test);
+        
         //AMQP
         test = new AMQPTest(CONNECTION_STRING, TOPIC);
         runTests(test);
+        
         //HTTP
-        test = new HTTPTest(CONNECTION_STRING, TOPIC);
+        //test = new HTTPTest(CONNECTION_STRING, TOPIC);
         //runTests(test);
     }
 

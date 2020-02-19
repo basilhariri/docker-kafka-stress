@@ -139,7 +139,7 @@ public class KafkaTest extends Test
         catch (Exception e)
         {
             System.out.println("KAFKA: Kafka consumer creation failed: " + e);
-            e.printStackTrace();
+            // e.printStackTrace();
             System.out.println("KAFKA: Skipping receive tests.");
             return null;
         }
