@@ -5,15 +5,13 @@ public class RunTests
     private final static String CONNECTION_STRING = System.getenv("CONNECTION_STRING");
     private final static String TOPIC = System.getenv("TOPIC");
     private final static boolean SHOULD_SUCCEED = Boolean.parseBoolean(System.getenv("SHOULD_SUCCEED"));
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
 
     public static void main(String... args) throws Exception 
     {
-        // System.out.println((char)27 + "[32m" + "ERROR MESSAGE IN RED");
-        // System.out.println((char)27 + "[39m" + "ERROR MESSAGE IN RED");
-        // System.out.println((char)27 + "[34m" + "ERROR MESSAGE IN RED");
-        // System.out.println((char)27 + "[35m" + "ERROR MESSAGE IN RED");
-        // System.out.println((char)27 + "[36m" + "ERROR MESSAGE IN RED");
-
         //Kafka
         Test test = new KafkaTest(CONNECTION_STRING, TOPIC);
         runTests(test);
@@ -69,7 +67,7 @@ public class RunTests
     {
         if(skippedTests)
         {
-            printFailure("SKIP: test was skipped");
+            printWarning("SKIP: test was skipped");
         }
         else if(SHOULD_SUCCEED && e == null)
         {
@@ -99,14 +97,18 @@ public class RunTests
 
     public static void printFailure(String s)
     {
-        System.out.println((char)27 + "[31m" + s + (char)27 + "[39m");
+        System.out.println(ANSI_RED + s + ANSI_RESET);
     }
 
     public static void printSuccess(String s)
     {
-        System.out.println((char)27 + "[32m" + s + (char)27 + "[39m");
+        System.out.println(ANSI_GREEN + s + ANSI_RESET);
     }
 
+    public static void printWarning(String s)
+    {
+        System.out.println(ANSI_YELLOW + s + ANSI_RESET);
+    }
 }
 
 
