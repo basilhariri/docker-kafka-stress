@@ -37,6 +37,7 @@ public class KafkaTest extends Test
             RunTests.printThreadSafe("KAFKA: Running send tests");
             ProducerRecord<Long, String> record = new ProducerRecord<Long,String>(this.TOPIC, TEST_MESSAGE);
             producer.send(record).get();
+            producer.close();
             return true;
         }
         return false;
@@ -51,6 +52,7 @@ public class KafkaTest extends Test
             RunTests.printThreadSafe("KAFKA: Running receive tests");
             consumer.subscribe(Collections.singleton(this.TOPIC));
             consumer.poll(Duration.ofSeconds(10));
+            consumer.close();
             return true;
         }
         return false;
@@ -63,6 +65,7 @@ public class KafkaTest extends Test
         {
             createTopicsTest(admin);
             listTopicsTest(admin);
+            admin.close();
             return true;
         }
         return false;
