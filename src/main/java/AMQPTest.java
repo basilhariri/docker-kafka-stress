@@ -64,12 +64,12 @@ public class AMQPTest extends Test
         if(ehClient != null)
         {
             RunTests.printThreadSafe("AMQP: Getting runtime information...");
-            if(ehClient.getRuntimeInformation() == null)
+            if(ehClient.getRuntimeInformation().get() == null)
             {
                 throw new TimeoutException("GetRuntimeInfo timed out");
             }
             RunTests.printThreadSafe("AMQP: Getting partition runtime information...");
-            if(ehClient.getPartitionRuntimeInformation("0") == null)
+            if(ehClient.getPartitionRuntimeInformation("0").get() == null)
             {
                 throw new TimeoutException("GetPartitionRuntimeInfo timed out");
             }
