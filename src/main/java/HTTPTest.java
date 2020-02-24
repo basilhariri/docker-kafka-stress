@@ -74,14 +74,4 @@ public class HTTPTest extends Test
         //TODO
         return true;
     }
-
-    public void testSetup() throws Exception
-    {
-
-    }
-    
-    public void testTearDown() throws Exception
-    {
-        
-    }
 }

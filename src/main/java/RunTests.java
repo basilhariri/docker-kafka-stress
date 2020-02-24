@@ -22,23 +22,16 @@ public class RunTests
     {
         //Kafka
         Test test = new KafkaTest(NAMESPACE, TOPIC);
-        test.testSetup();
         runTests(test);
-        test.testTearDown();
         
         //AMQP
         test = new AMQPTest(NAMESPACE, TOPIC, EXECUTOR_SERVICE);
-        test.testSetup();
         runTests(test);
-        test.testTearDown();
         
         //HTTP
         //test = new HTTPTest(CONNECTION_STRING, TOPIC);
-        test.testSetup();
-        runTests(test);
-        test.testTearDown();
-
-        EXECUTOR_SERVICE.shutdownNow();
+        //runTests(test);
+        stopTests();
     }
 
     public static void runTests(Test test)
@@ -76,6 +69,11 @@ public class RunTests
         {
             verifyTestResult(skipped, e);
         }
+    }
+
+    public static void stopTests()
+    {
+        EXECUTOR_SERVICE.shutdownNow();
     }
 
     //Does expectation match result?
