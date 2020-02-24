@@ -34,9 +34,9 @@ public class RunTests
         
         //HTTP
         //test = new HTTPTest(CONNECTION_STRING, TOPIC);
-        // test.testSetup();
-        // runTests(test);
-        // test.testTearDown();
+        test.testSetup();
+        runTests(test);
+        test.testTearDown();
 
         EXECUTOR_SERVICE.shutdownNow();
     }
