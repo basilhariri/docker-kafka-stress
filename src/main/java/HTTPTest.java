@@ -28,6 +28,7 @@ public class HTTPTest extends Test
     {
         try 
         {
+            RunTests.printThreadSafe("HTTP: Running send tests");
             HttpClient httpclient = HttpClients.createDefault();
             HttpPost post = new HttpPost("https://" + this.NAMESPACE + ".servicebus.windows.net/" + this.TOPIC + "/messages?timeout=60&api-version=2014-01");
             
@@ -65,12 +66,14 @@ public class HTTPTest extends Test
     
     public boolean runReceiveTests()
     {
+        RunTests.printThreadSafe("HTTP: Running receive tests");
         //TODO
         return true;
     }
 
     public boolean runManagementTests()
     {
+        RunTests.printThreadSafe("HTTP: Running management tests");
         //TODO
         return true;
     }
@@ -82,6 +85,6 @@ public class HTTPTest extends Test
     
     public void testTearDown() throws Exception
     {
-        
+
     }
 }
