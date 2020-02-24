@@ -31,7 +31,9 @@ public class RunTests
         //HTTP
         //test = new HTTPTest(CONNECTION_STRING, TOPIC);
         //runTests(test);
-        stopTests();
+
+        //Shutdown
+        EXECUTOR_SERVICE.shutdownNow();
     }
 
     public static void runTests(Test test)
@@ -70,12 +72,7 @@ public class RunTests
             verifyTestResult(skipped, e);
         }
     }
-
-    public static void stopTests()
-    {
-        EXECUTOR_SERVICE.shutdownNow();
-    }
-
+    
     //Does expectation match result?
     public static void verifyTestResult(boolean skippedTests, Exception e)
     {

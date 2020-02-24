@@ -3,7 +3,9 @@ import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventhubs.EventPosition;
 import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.eventhubs.PartitionReceiver;
+import com.microsoft.azure.eventhubs.PartitionRuntimeInformation;
 import com.microsoft.azure.eventhubs.TimeoutException;
+
 import java.util.concurrent.ScheduledExecutorService;
 
 public class AMQPTest extends Test
@@ -24,6 +26,9 @@ public class AMQPTest extends Test
                 .setEventHubName(this.TOPIC)
                 .setAuthentication(ConnectionStringBuilder.MANAGED_IDENTITY_AUTHENTICATION);
             this.ehClient = EventHubClient.createFromConnectionStringSync(connStr.toString(), executorService);
+            
+            //String cs = "connection string";
+            //this.ehClient = EventHubClient.createFromConnectionStringSync(cs, executorService);
         }
         catch (Exception e)
         {
@@ -63,16 +68,18 @@ public class AMQPTest extends Test
         RunTests.printThreadSafe("AMQP: Management tests...");
         if(ehClient != null)
         {
-            RunTests.printThreadSafe("AMQP: Getting runtime information...");
-            if(ehClient.getRuntimeInformation().get() == null)
-            {
-                throw new TimeoutException("GetRuntimeInfo timed out");
-            }
             RunTests.printThreadSafe("AMQP: Getting partition runtime information...");
-            if(ehClient.getPartitionRuntimeInformation("0").get() == null)
-            {
-                throw new TimeoutException("GetPartitionRuntimeInfo timed out");
-            }
+            PartitionRuntimeInformation p = ehClient.getPartitionRuntimeInformation("0").get();
+            RunTests.printThreadSafe("Get partition runtime info succeeded with eventhub path: " + p.getEventHubPath());
+            // if(ehClient.getRuntimeInformation().get() == null)
+            // {
+            //     throw new TimeoutException("GetRuntimeInfo timed out");
+            // }
+            // RunTests.printThreadSafe("AMQP: Getting partition runtime information...");
+            // if(ehClient.getPartitionRuntimeInformation("0").get() == null)
+            // {
+            //     throw new TimeoutException("GetPartitionRuntimeInfo timed out");
+            // }
             return true;
         }
         return false;

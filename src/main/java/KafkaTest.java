@@ -63,18 +63,26 @@ public class KafkaTest extends Test
         AdminClient admin = createAdminClient(this.FQDN);
         if(admin != null)
         {
-            createTopicsTest(admin);
+            String topicName = "createdTopic" + UUID.randomUUID();
+            createTopicsTest(admin, topicName);
             listTopicsTest(admin);
+            deleteTopicsTest(admin, topicName);
             admin.close();
             return true;
         }
         return false;
     }
 
-    public void createTopicsTest(AdminClient admin)
+    public void createTopicsTest(AdminClient admin, String topic)
     {
         RunTests.printThreadSafe("KAFKA: Running createTopics test");
-        admin.createTopics(Collections.singleton(new NewTopic("createdTopic" + UUID.randomUUID(), 2, (short) 0)));
+        admin.createTopics(Collections.singleton(new NewTopic(topic, 2, (short) 0)));
+    }
+
+    public void deleteTopicsTest(AdminClient admin, String topic)
+    {
+        RunTests.printThreadSafe("KAFKA: Running deleteTopics test");
+        admin.deleteTopics(Collections.singleton(topic));
     }
 
     public void listTopicsTest(AdminClient admin) throws Exception
