@@ -21,52 +21,23 @@ public class KafkaTest extends Test
 {
     private String TOPIC;
     private String FQDN;
-    private Producer<Long, String> producer;
-    private Consumer<Long, String> consumer;
-    private AdminClient admin;
 
     public KafkaTest(String ns, String topic)
     {
         FQDN = ns + ".servicebus.windows.net:9093";
         TOPIC = topic;
-        try 
-        {
-            testSetup();
-        } 
-        catch(Exception e){}
-    }
-
-    public void testSetup() throws Exception 
-    {
-        this.producer = createKafkaProducer(FQDN);
-        this.consumer = createKafkaConsumer(FQDN);
-        this.admin = createAdminClient(FQDN);
-    }
-
-    public void testTearDown() throws Exception
-    {
-        if(this.producer != null)
-        {
-            this.producer.close();
-        }
-        if(this.consumer != null)
-        {
-            this.consumer.close();
-        }
-        if(this.admin != null)
-        {
-            this.admin.close();
-        }
     }
 
     public boolean runSendTests() throws Exception
     {
         RunTests.printThreadSafe("KAFKA: Send tests");
+        Producer<Long, String> producer = createKafkaProducer(this.FQDN);
         if(producer != null)
         {
             RunTests.printThreadSafe("KAFKA: Running send tests");
             ProducerRecord<Long, String> record = new ProducerRecord<Long,String>(this.TOPIC, TEST_MESSAGE);
             producer.send(record).get();
+            producer.close();
             return true;
         }
         return false;
@@ -75,11 +46,13 @@ public class KafkaTest extends Test
     public boolean runReceiveTests() throws Exception
     {
         RunTests.printThreadSafe("KAFKA: Receive tests");
+        Consumer<Long, String> consumer = createKafkaConsumer(this.FQDN);
         if(consumer != null)
         {
             RunTests.printThreadSafe("KAFKA: Running receive tests");
             consumer.subscribe(Collections.singleton(this.TOPIC));
             consumer.poll(Duration.ofSeconds(10));
+            consumer.close();
             return true;
         }
         return false;
@@ -87,28 +60,21 @@ public class KafkaTest extends Test
 
     public boolean runManagementTests() throws Exception
     {
-        RunTests.printThreadSafe("KAFKA: Management tests");
+        AdminClient admin = createAdminClient(this.FQDN);
         if(admin != null)
         {
-            String topic = "createdTopic" + UUID.randomUUID();
-            createTopicsTest(admin, topic);
+            createTopicsTest(admin);
             listTopicsTest(admin);
-            deleteTopicsTest(admin, topic);
+            admin.close();
             return true;
         }
         return false;
     }
 
-    public void createTopicsTest(AdminClient admin, String topicName)
+    public void createTopicsTest(AdminClient admin)
     {
         RunTests.printThreadSafe("KAFKA: Running createTopics test");
-        admin.createTopics(Collections.singleton(new NewTopic(topicName, 2, (short) 0)));
-    }
-
-    public void deleteTopicsTest(AdminClient admin, String topicName)
-    {
-        RunTests.printThreadSafe("KAFKA: Running deleteTopics test");
-        admin.deleteTopics(Collections.singleton(topicName));
+        admin.createTopics(Collections.singleton(new NewTopic("createdTopic" + UUID.randomUUID(), 2, (short) 0)));
     }
 
     public void listTopicsTest(AdminClient admin) throws Exception
