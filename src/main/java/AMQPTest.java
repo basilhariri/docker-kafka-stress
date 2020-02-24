@@ -35,6 +35,15 @@ public class AMQPTest extends Test
         }
     }
 
+    public void testSetup() throws Exception
+    {
+    }
+    
+    public void testTearDown() throws Exception
+    {
+        ehClient.close().get();
+    }
+
     public boolean runSendTests() throws Exception
     {
         RunTests.printThreadSafe("AMQP: Sending...");
