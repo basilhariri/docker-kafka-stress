@@ -20,8 +20,8 @@ public class HTTPTest extends Test
 
     public HTTPTest(String namespace, String topic)
     {
-        this.TOPIC = topic;
         this.NAMESPACE = namespace;
+        this.TOPIC = topic;
     }
 
     public boolean runSendTests() throws Exception
@@ -30,7 +30,6 @@ public class HTTPTest extends Test
         {
             HttpClient httpclient = HttpClients.createDefault();
             HttpPost post = new HttpPost("https://" + this.NAMESPACE + ".servicebus.windows.net/" + this.TOPIC + "/messages?timeout=60&api-version=2014-01");
-            
             // Request parameters and other properties.
             List<NameValuePair> params = new ArrayList<NameValuePair>(2);
             params.add(new BasicNameValuePair("Location", "Redmond"));

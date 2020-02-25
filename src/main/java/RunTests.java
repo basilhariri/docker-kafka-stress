@@ -25,11 +25,11 @@ public class RunTests
         runTests(test);
         
         //AMQP
-        test = new AMQPTest(NAMESPACE, TOPIC, EXECUTOR_SERVICE);
-        runTests(test);
+        //test = new AMQPTest(NAMESPACE, TOPIC, EXECUTOR_SERVICE);
+        //runTests(test);
         
         //HTTP
-        //test = new HTTPTest(CONNECTION_STRING, TOPIC);
+        //test = new HTTPTest(NAMESPACE, TOPIC);
         //runTests(test);
 
         //Shutdown
@@ -51,28 +51,28 @@ public class RunTests
         }
 
         //Receive
-        try
-        {
-            skipped = !test.runReceiveTests();
-            verifyTestResult(skipped, null);
-        }
-        catch (Exception e)
-        {
-            verifyTestResult(skipped, e);
-        }
+        // try
+        // {
+        //     skipped = !test.runReceiveTests();
+        //     verifyTestResult(skipped, null);
+        // }
+        // catch (Exception e)
+        // {
+        //     verifyTestResult(skipped, e);
+        // }
 
-        //Management
-        try
-        {
-            skipped = !test.runManagementTests();
-            verifyTestResult(skipped, null);
-        }
-        catch (Exception e)
-        {
-            verifyTestResult(skipped, e);
-        }
+        // //Management
+        // try
+        // {
+        //     skipped = !test.runManagementTests();
+        //     verifyTestResult(skipped, null);
+        // }
+        // catch (Exception e)
+        // {
+        //     verifyTestResult(skipped, e);
+        // }
     }
-    
+
     //Does expectation match result?
     public static void verifyTestResult(boolean skippedTests, Exception e)
     {
