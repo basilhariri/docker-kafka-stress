@@ -30,6 +30,7 @@ public class HTTPTest extends Test
         {
             HttpClient httpclient = HttpClients.createDefault();
             HttpPost post = new HttpPost("https://" + this.NAMESPACE + ".servicebus.windows.net/" + this.TOPIC + "/messages?timeout=60&api-version=2014-01");
+            post.addHeader("Authorization", "SharedAccessSignature sr=" + this.NAMESPACE + ".servicebus.windows.net&sig=BzxzVtCLTmfGulTnMu7mx93L2nzP4Ib8p7Gp1vOpWSo=&se=1403736877&skn=RootManageSharedAccessKey");
             // Request parameters and other properties.
             List<NameValuePair> params = new ArrayList<NameValuePair>(2);
             params.add(new BasicNameValuePair("Location", "Redmond"));
